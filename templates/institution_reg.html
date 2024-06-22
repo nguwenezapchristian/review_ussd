@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Institution</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="reg_styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Register Institution</h2>
+        <form action="#">
+            <div class="form-group">
+                <label for="institution-name">Institution Name</label>
+                <input type="text" id="institution-name" name="institution-name" required>
+                <i class="ri-building-line icon"></i>
+            </div>
+            <div class="form-group">
+                <label for="sector">Sector</label>
+                <select id="sector" name="sector" required>
+                    <option value="" disabled selected>Select Sector</option>
+                    <option value="public">Government Institution</option>
+                    <option value="private">Government Hospitals</option>
+                    
+                </select>
+                <i class="ri-briefcase-line icon"></i>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+                <i class="ri-file-text-line icon"></i>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register">
+            </div>
+        </form>
+    </div>
+</body>
+</html>
