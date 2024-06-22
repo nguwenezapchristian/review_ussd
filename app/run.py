@@ -283,6 +283,10 @@ def register_review():
 def dashboard():
     return render_template('review_ussd.html')
 
+@app.route('/registration')
+def register():
+    return render_template('institution_reg.html')
+
 @app.route('/retrieve_reviews', methods=['GET'])
 def retrieve_reviews():
     """The route for retrieving all reviews from the db."""
