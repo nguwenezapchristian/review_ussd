@@ -17,6 +17,9 @@ db_password = os.getenv('DB_PASSWORD')
 db_host = os.getenv('DB_HOST')
 db_name = os.getenv('DB_NAME')
 db_port = os.getenv('DB_PORT')
+print("password: ", db_password)
+print("username: ", db_username)
+print("host: ", db_host)
 
 # URL-encode the password
 encoded_password = urllib.parse.quote_plus(db_password)
@@ -150,7 +153,7 @@ def ussd():
 
 def get_institutions(institution_type, language):
     if institution_type == "hospital":
-        institutions = Hospitals.query.all()
+        institutions = Hostpitals.query.all()
         prompt = "CON Select a hospital:\n"
     elif institution_type == "government_office":
         institutions = Gov_institute.query.all()
@@ -164,7 +167,7 @@ def get_institutions(institution_type, language):
 def get_institution_name(institution_type, index):
     index = int(index) - 1
     if institution_type == "hospital":
-        institutions = Hospitals.query.all()
+        institutions = Hostpitals.query.all()
     elif institution_type == "government_office":
         institutions = Gov_institute.query.all()
 
@@ -177,7 +180,7 @@ def save_rating(institution_type, institution_index, rating):
     rating = int(rating)
 
     if institution_type == "hospital":
-        institutions = Hospitals.query.all()
+        institutions = Hostpitals.query.all()
         if 0 <= institution_index < len(institutions):
             institution_id = institutions[institution_index].id
             review = Hosp_review(institution_id=institution_id, rating=rating)
@@ -187,17 +190,14 @@ def save_rating(institution_type, institution_index, rating):
             institution_id = institutions[institution_index].id
             review = Gov_review(institution_id=institution_id, rating=rating)
 
-    try:
-        db.session.add(review)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        raise e
+    db.session.add(review)
+    db.session.commit()
 
 @app.route('/register_institution', methods=['POST'])
 def register_institution():
     """The route for posting institutions in the db."""
     try:
+        # Get the institution name and description from the request
         data = request.get_json()
         if not data or not data.get('name'):
             return jsonify({'error': 'Name is required'}), 400
@@ -205,30 +205,33 @@ def register_institution():
         name = data.get('name')
         description = data.get('description')
 
+        # Determine institution type and create the appropriate object
         institution_type = data.get('type', 'hospital').lower()
         if institution_type == 'hospital':
-            institution = Hospitals(name=name, description=description)
+            institution = Hostpitals(name=name, description=description)
         elif institution_type == 'government_office':
             institution = Gov_institute(name=name, description=description)
         else:
             return jsonify({'error': 'Invalid institution type'}), 400
 
+        # Add the Institution object to the database
         db.session.add(institution)
         db.session.commit()
 
         return jsonify({'message': f'{institution_type.capitalize()}: {name} registered successfully'}), 200
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/retrieve_institutions', methods=['GET'])
 def retrieve_institutions():
     """The route for retrieving all institutions from the db."""
     try:
-        hospitals = Hospitals.query.all()
+        # Get all institutions from the database
+        hospitals = Hostpitals.query.all()
         government_offices = Gov_institute.query.all()
 
+        # Create a list of dictionaries containing the institutions
         institutions_list = []
         for hospital in hospitals:
             institutions_list.append({
@@ -254,6 +257,7 @@ def retrieve_institutions():
 def register_review():
     """The route for posting reviews in the db."""
     try:
+        # Get the review details from the request
         data = request.get_json()
         if not data or not data.get('institution_id') or not data.get('rating'):
             return jsonify({'error': 'Institution ID and Rating are required'}), 400
@@ -261,31 +265,34 @@ def register_review():
         institution_id = data.get('institution_id')
         rating = data.get('rating')
 
-        institution = Hospitals.query.filter_by(id=institution_id).first() or Gov_institute.query.filter_by(id=institution_id).first()
+        # Determine institution type and create the appropriate review object
+        institution = Hostpitals.query.filter_by(id=institution_id).first() or Gov_institute.query.filter_by(id=institution_id).first()
         if not institution:
             return jsonify({'error': 'Invalid institution ID'}), 400
 
-        if isinstance(institution, Hospitals):
+        if isinstance(institution, Hostpitals):
             review = Hosp_review(institution_id=institution_id, rating=rating)
         else:
             review = Gov_review(institution_id=institution_id, rating=rating)
 
+        # Add the Review object to the database
         db.session.add(review)
         db.session.commit()
 
         return jsonify({'message': f'Review for Institution ID: {institution_id} registered successfully'}), 200
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/retrieve_reviews', methods=['GET'])
 def retrieve_reviews():
     """The route for retrieving all reviews from the db."""
     try:
+        # Get all reviews from the database
         hosp_reviews = Hosp_review.query.all()
         gov_reviews = Gov_review.query.all()
 
+        # Create a list of dictionaries containing the reviews
         reviews_list = []
         for review in hosp_reviews:
             reviews_list.append({
@@ -311,7 +318,7 @@ def retrieve_reviews():
 
 # Create all tables based on the defined models
 with app.app_context():
-    db.create_all()
+    db.create_all() 
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=9000)
