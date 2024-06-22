@@ -1,5 +1,5 @@
 import secrets
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from dotenv import load_dotenv
 from models import Gov_institute, Hospitals, Gov_review, Hosp_review, db
 import urllib.parse
@@ -281,7 +281,7 @@ def register_review():
 
 @app.route('/dashboard')
 def dashboard():
-    return('review_ussd.html')
+    return render_template('review_ussd.html')
 
 @app.route('/retrieve_reviews', methods=['GET'])
 def retrieve_reviews():
