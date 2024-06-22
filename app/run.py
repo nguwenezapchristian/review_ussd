@@ -279,6 +279,10 @@ def register_review():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+@app.route('/dashboard')
+def dashboard():
+    return('review_ussd.html')
+
 @app.route('/retrieve_reviews', methods=['GET'])
 def retrieve_reviews():
     """The route for retrieving all reviews from the db."""
