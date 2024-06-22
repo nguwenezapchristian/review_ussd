@@ -283,7 +283,7 @@ def register_review():
 def dashboard():
     return render_template('review_ussd.html')
 
-@app.route('/register_institution')
+@app.route('/register_inst')
 def register_inst():
     return render_template('institution_reg.html')
 
